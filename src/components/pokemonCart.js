@@ -3,9 +3,13 @@ import { Text, StyleSheet, View, Dimensions, Image, TouchableOpacity } from "rea
 import { COLORS } from "../colors";
 
 import api from "../../services/api";
+import { useNavigation } from "@react-navigation/native";
 
 
 export default function PokemonCart({name, url}) {
+  console.log(url)
+  const navigation = useNavigation()
+  const pokeNumber = url.replace('https://pokeapi.co/api/v2/pokemon/','').replace('/', '')
   const [type, setType] = useState('')
   async function GetContent() {
     const baseUrl = 'https://pokeapi.co/api/v2/';
@@ -32,18 +36,42 @@ export default function PokemonCart({name, url}) {
 
 
   const [image_url, setImage_url] = useState(undefined)
-  const pokeNumber = url.replace('https://pokeapi.co/api/v2/pokemon/','').replace('/', '')
+
   
 
   useEffect(() => {
-    setImage_url(`https://unpkg.com/pokeapi-sprites@2.0.2/sprites/pokemon/versions/generation-v/black-white/animated/${pokeNumber}.gif`)
+
+    if (pokeNumber <= 999) {
+      setImage_url(`http://www.serebii.net/pokemongo/pokemon/${`00${pokeNumber}`.slice(-3)}.png`)
+     
+    } else {
+      setImage_url(`http://www.serebii.net/pokemongo/pokemon/${`{pokeNumber}`}.png`)
+    }
+    
+    //http://www.serebii.net/pokemongo/pokemon/${`0${pokeNumber}`.slice(-3)}.png
    getContent()
   }, [])
   
+
+  function PokeNumber() {
+    if (pokeNumber >= 999) {
+      return <>
+       <Text style={styles.PokemonNumber}>{`${pokeNumber}`}</Text>
+      </>
+     
+    } else {
+     return <>
+      <Text style={styles.PokemonNumber}>{`00${pokeNumber}`.slice(-3)}</Text>
+     </>
+    }
+  }
+
   return <>
     
-    <TouchableOpacity style={[styles.PokeCart, {backgroundColor: COLORS[type],}]}>
-        <Text style={styles.PokemonNumber}>{`0${pokeNumber}`.slice(-3)}</Text>
+    <TouchableOpacity onPress={() => {
+        navigation.navigate('Pokemon', {name: name, image: image_url, pokeNumber: pokeNumber, type: type,})
+    }} style={[styles.PokeCart, {backgroundColor: COLORS[type],}]}>
+       <PokeNumber />
         <Text style={styles.PokemonName}>{name}</Text>
         <View style={styles.ViewPokemonImage}>
             <Image source={{uri: image_url}} style={styles.pokemonImage} resizeMode={'contain'} />
@@ -54,6 +82,8 @@ export default function PokemonCart({name, url}) {
  
   </>
 }
+
+
 
 const height= Dimensions.get('window').height
 const styles = StyleSheet.create({

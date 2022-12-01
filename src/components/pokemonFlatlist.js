@@ -10,7 +10,7 @@ import { COLORS } from "../colors";
 
 import api from "../../services/api";
 
-export default function PostsFlatList() {
+export default function PostsFlatList({ Topo}) {
     const per_page = 11;
     const [page, setPage] = useState(10)
     const [loading, setLoading] = useState(false)
@@ -76,6 +76,7 @@ async function GetContent() {
                 showsHorizontalScrollIndicator={false}
                 showsVerticalScrollIndicator={false}
                 ListFooterComponent={<LoadingPokeball />}
+                ListHeaderComponent={Topo}
                 numColumns={2}
                 onEndReached={getContent}
                 onEndReachedThreshold={0.1}
