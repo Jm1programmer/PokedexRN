@@ -12,7 +12,7 @@ export default function LoadingPokeball() {
         rotateValueHolder.setValue(0);
         Animated.timing(rotateValueHolder, {
           toValue: 1,
-          duration: 1000,
+          duration: 4000,
           easing: Easing.linear,
           useNativeDriver: false,
         }).start(() => startImageRotateFunction());

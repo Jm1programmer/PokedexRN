@@ -6,6 +6,8 @@ import { COLORS } from "../../colors";
 import PokemonFlatList from "../../components/pokemonFlatlist";
 import Header from "./header";
 import pokeballBackground from '../../../assets/pokeballBackground.png'
+
+
 export default function Pokedex() {
 
  const Topo = () => {

@@ -5,16 +5,17 @@ import { FlatList, Text, StyleSheet, Dimensions, ActivityIndicator} from "react-
 
 import PokemonCart from "./pokemonCart";
 import LoadingPokeball from "./loadingPokeball";
+import CompletePokedex from "./CompletePokedex";
 
 import { COLORS } from "../colors";
 
 import api from "../../services/api";
 
 export default function PostsFlatList({ Topo}) {
-    const per_page = 11;
+    const per_page = 10;
     const [page, setPage] = useState(10)
     const [loading, setLoading] = useState(false)
-    
+    const [hasmoredata, setHasmoredata] = useState(true)
 
 async function GetContent() {
 
@@ -40,13 +41,17 @@ async function GetContent() {
    
         setLista(resultado.results)
         
-        
+        if (page <=(912)) {
         setPage(page + per_page)
+      
+        } else {
+            setHasmoredata(false)
+        }
         setLoading(false)
        
      }
     
-     
+   
     
      useEffect(() => {
         if (loading) return;
@@ -75,7 +80,13 @@ async function GetContent() {
                 horizontal={false}
                 showsHorizontalScrollIndicator={false}
                 showsVerticalScrollIndicator={false}
-                ListFooterComponent={<LoadingPokeball />}
+                ListFooterComponent={() => {
+                    if (hasmoredata) {
+                    return <LoadingPokeball />
+                    } else {
+                       return <CompletePokedex />
+                    }
+                }}
                 ListHeaderComponent={Topo}
                 numColumns={2}
                 onEndReached={getContent}
@@ -95,5 +106,11 @@ async function GetContent() {
 const styles = StyleSheet.create({
     FlatList: {
         flexBasis: 0,
-    }
+    },
+    Title: {
+        fontFamily: 'Montserrat-SemiBold',
+        fontSize: 18,
+        color: COLORS.Black,
+        zIndex: 99,
+    },
 })
