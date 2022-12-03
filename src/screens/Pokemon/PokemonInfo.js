@@ -4,6 +4,7 @@ import { COLORS } from "../../colors";
 
 import PokemonAbout from "./PokemonInfo/About";
 import PokemonEvolution from "./PokemonInfo/Evolution";
+import PokemonBaseStats from "./PokemonInfo/baseStats";
 
 import api from "../../../services/api";
 import { useRoute } from "@react-navigation/native";
@@ -12,7 +13,12 @@ export default function PokemonInfo() {
     const route = useRoute()
     const [GetSpecie, setGetSpecie] = useState('')
     const [GetEvolutionChainNumber, setGetEvolutionChainNumber] = useState(1)
-
+    const [Hp, setHp] = useState(undefined)
+    const [Attack, setAttack] = useState(undefined)
+    const [Defense, setDefense] = useState()
+    const [special_defense, setSpecial_defense] = useState(undefined)
+    const [special_attack, setSpecial_attack] = useState(undefined)
+    const [speed, setSpeed] = useState(undefined)
 
     const EvolutionChainNumber = () => {
         const EvolutionChain = setGetEvolutionChainNumber( GetSpecie.replace('https://pokeapi.co/api/v2/evolution-chain/','').replace('/', ''))
@@ -21,6 +27,22 @@ export default function PokemonInfo() {
 
     const pokeNumber = route.params.pokeNumber
 
+
+    async function GetPokemonStats() {
+
+  
+        const baseUrl = 'https://pokeapi.co/api/v2';
+          try {
+              const resultado =  await api.get(`${baseUrl}/pokemon/${pokeNumber}`)
+              return resultado.data
+      
+          }
+          
+          catch (error) {
+              console.log(error)
+              return {}
+          }
+      };
 
 
 
@@ -40,10 +62,15 @@ export default function PokemonInfo() {
       };
 
       const getContent = async () => {
-     
+        const resStats = await GetPokemonStats()
         const pokeEvolution = await GetSpecies()
         setGetSpecie(pokeEvolution.evolution_chain.url)
-
+        setHp(resStats.stats[0].base_stat)
+        setAttack(resStats.stats[1].base_stat)
+        setDefense(resStats.stats[2].base_stat)
+        setSpecial_attack(resStats.stats[3].base_stat)
+        setSpecial_defense(resStats.stats[4].base_stat)
+        setSpeed(resStats.stats[5].base_stat)
         
      }
 
@@ -151,9 +178,10 @@ export default function PokemonInfo() {
         if (chosen === 'About' ) {
             return <PokemonAbout />
         } else if (chosen === 'Evolution') {
-            return <ScrollView>
-             <PokemonEvolution EvolutionChainNumber={GetEvolutionChainNumber}  />
-            </ScrollView>
+            return <PokemonEvolution EvolutionChainNumber={GetEvolutionChainNumber}  />
+           
+        } else if (chosen === 'BaseStats') {
+            return <PokemonBaseStats Hp={Hp} speed={speed} special_attack={special_attack} special_defense={special_defense} Attack={Attack} Defense={Defense} />
         }
     }
 

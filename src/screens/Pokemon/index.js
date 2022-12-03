@@ -12,9 +12,11 @@ export default function Pokemon() {
     
     <View style={styles.screen}>
         
-    
+    <ScrollView>
         <Header style={styles.Header}/>
+       
         <PokemonInfo />
+        </ScrollView>
 
     </View>
   
