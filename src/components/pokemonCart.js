@@ -1,15 +1,16 @@
 import React, {useEffect,useState, memo} from "react";
-import { Text, StyleSheet, View, Dimensions, Image, TouchableOpacity } from "react-native";
+import { Text, StyleSheet, View, Dimensions, Image, TouchableOpacity,  } from "react-native";
 import { COLORS } from "../colors";
 
 import api from "../../services/api";
 import { useNavigation } from "@react-navigation/native";
-
+import LoadingPokeball from "./loadingPokeball";
 
 function PokemonCart({name, url}) {
   
   const navigation = useNavigation()
   const pokeNumber = url.replace('https://pokeapi.co/api/v2/pokemon/','').replace('/', '')
+  
 
   const name_ = name.charAt(0).toUpperCase() + name.slice(1)
 
@@ -20,6 +21,9 @@ function PokemonCart({name, url}) {
   const [res, setRes] = useState(undefined)
   const type1_ = type.charAt(0).toUpperCase() + type.slice(1)
   const type2_ = type2.charAt(0).toUpperCase() + type2.slice(1)
+
+
+
   async function GetContent() {
     const baseUrl = 'https://pokeapi.co/api/v2/';
       try {
@@ -35,14 +39,19 @@ function PokemonCart({name, url}) {
       }
   };
 
+
+
   const getContent = async () => {
     const resultado = await GetContent()
-
+ 
     setType(resultado.types[0].type.name)
     if (resultado.types[1] ) {
     setType2(resultado.types[1].type.name)
+
     
     }
+
+
     setRes(resultado)
     
  }
@@ -110,10 +119,12 @@ function PokemonCart({name, url}) {
     
   }
 
+ 
+    if (type != '') {
   return <>
     
     <TouchableOpacity onPress={() => {
-        navigation.navigate('Pokemon', {name: name_, image: image_url, pokeNumber: pokeNumber, type1: type, type2: type2,})
+        navigation.navigate('Pokemon', {name: name_, image: image_url, pokeNumber: pokeNumber, type1: type, type2: type2, })
     }} style={[styles.PokeCart, {backgroundColor: COLORS[type],}]}>
        <PokeNumber />
        <PokeTypes />
@@ -126,6 +137,13 @@ function PokemonCart({name, url}) {
 
  
   </>
+} else {
+  return <View style={styles.PokeCart}>
+    <LoadingPokeball />
+  </View>
+
+}
+
 }
 
 export default memo(PokemonCart)

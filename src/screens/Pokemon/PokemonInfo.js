@@ -1,11 +1,56 @@
-import React, {useEffect,useState} from "react";
+import React, {useEffect,useReducer,useState} from "react";
 import { Text, StyleSheet, View, ScrollView, TouchableOpacity } from "react-native";
 import { COLORS } from "../../colors";
 
 import PokemonAbout from "./PokemonInfo/About";
+import PokemonEvolution from "./PokemonInfo/Evolution";
 
+import api from "../../../services/api";
+import { useRoute } from "@react-navigation/native";
 
 export default function PokemonInfo() {
+    const route = useRoute()
+    const [GetSpecie, setGetSpecie] = useState('')
+    const [GetEvolutionChainNumber, setGetEvolutionChainNumber] = useState(1)
+
+
+    const EvolutionChainNumber = () => {
+        const EvolutionChain = setGetEvolutionChainNumber( GetSpecie.replace('https://pokeapi.co/api/v2/evolution-chain/','').replace('/', ''))
+        
+    }
+
+    const pokeNumber = route.params.pokeNumber
+
+
+
+
+    async function GetSpecies() {
+        const baseUrl = 'https://pokeapi.co/api/v2/';
+          try {
+              const resultado =  await api.get(`${baseUrl}pokemon-species/${pokeNumber}`)
+              
+              return resultado.data
+              
+          }
+          
+          catch (error) {
+              console.log(error)
+              return {}
+          }
+      };
+
+      const getContent = async () => {
+     
+        const pokeEvolution = await GetSpecies()
+        setGetSpecie(pokeEvolution.evolution_chain.url)
+
+        
+     }
+
+     useEffect(() => {
+        getContent()
+     }, [])
+    
 
     const [chosen, setChosen] = useState("About")
     function Menu() {
@@ -73,6 +118,7 @@ export default function PokemonInfo() {
             return <>
             <TouchableOpacity style={styles.TextMenuView}  onPress={ () => {
                 setChosen('Evolution')
+                EvolutionChainNumber()
             }}>
                <Text style={styles.TextMenu}>Evolution</Text>
                </TouchableOpacity>
@@ -99,13 +145,21 @@ export default function PokemonInfo() {
            </>
         }
 
+    };
+
+    function TheContent() {
+        if (chosen === 'About' ) {
+            return <PokemonAbout />
+        } else if (chosen === 'Evolution') {
+            return <PokemonEvolution EvolutionChainNumber={GetEvolutionChainNumber}  />
+        }
     }
 
   return <>
     
     <View style={styles.PokemonInfo}>
     <Menu />
-    <PokemonAbout />
+   <TheContent />
     </View>
   
 
