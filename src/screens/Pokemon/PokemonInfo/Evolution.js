@@ -1,6 +1,6 @@
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import React, {useEffect,useState} from "react";
-import { Text, StyleSheet, View, ScrollView, Image } from "react-native";
+import { Text, StyleSheet, View, ScrollView, Image, TouchableOpacity } from "react-native";
 import { COLORS } from "../../../colors";
 
 import LoadingPokeball from "../../../components/loadingPokeball";
@@ -24,6 +24,18 @@ export default function PokemonEvolution({EvolutionChainNumber}) {
     const [PokemonFirstEvolutionImage, setPokemonFirstEvolutionImage] = useState('')
     const [PokemonSecondEvolutionImage, setPokemonSecondEvolutionImage] = useState('')
     const [PokemonThirdEvolutionImage, setPokemonThirdEvolutionImage] = useState('')
+
+    const [PokemonFirstEvolutionMinLevel, setPokemonFirstEvolutionMinLevel] =useState('')
+
+    const [PokemonSecondEvolutionMinLevel, setPokemonSecondEvolutionMinLevel] =useState('')
+
+    const [PokemonFirstEvolutionStone, setPokemonFirstEvolutionStone] =useState('')
+  
+    const [PokemonSecondEvolutionStone, setPokemonSecondEvolutionStone] =useState('')
+
+    const [PokemonFirstEvolutionTrigger, setPokemonFirstEvolutionTrigger] = useState('')
+
+    const [PokemonSecondEvolutionTrigger, setPokemonSecondEvolutionTrigger] = useState('')
 
         const EvolutionNumber = EvolutionChainNumber
 
@@ -72,12 +84,32 @@ export default function PokemonEvolution({EvolutionChainNumber}) {
 
                     setPokemonSecondEvolutionImage((EvolutionChain.chain.evolves_to[0].species.url).replace('https://pokeapi.co/api/v2/pokemon-species/','').replace('/', ''))
 
+                    setPokemonFirstEvolutionMinLevel(EvolutionChain.chain.evolves_to[0].evolution_details[0].min_level)
+
+
+                    if (EvolutionChain.chain.evolves_to[0].evolution_details[0].item) {
+                    setPokemonFirstEvolutionStone((EvolutionChain.chain.evolves_to[0].evolution_details[0].item.name).charAt(0).toUpperCase() + EvolutionChain.chain.evolves_to[0].evolution_details[0].item.name.slice(1))
+                    }
+
+                    if (EvolutionChain.chain.evolves_to[0].evolves_to[0]) {
+                    setPokemonFirstEvolutionTrigger((EvolutionChain.chain.evolves_to[0].evolves_to[0].evolution_details[0].trigger.name).charAt(0).toUpperCase() + EvolutionChain.chain.evolves_to[0].evolves_to[0].evolution_details[0].trigger.name.slice(1))
+                    }
+
                     if (EvolutionChain.chain.evolves_to[0].evolves_to[0]) {
 
                  //3 Evolucao
                  setPokemonThirdEvolutionImage((EvolutionChain.chain.evolves_to[0].evolves_to[0].species.url).replace('https://pokeapi.co/api/v2/pokemon-species/','').replace('/', ''))
-                 
+
+                 setPokemonSecondEvolutionMinLevel(EvolutionChain.chain.evolves_to[0].evolves_to[0].evolution_details[0].min_level)
+                        
                     setPokemonThirdEvolutionName((EvolutionChain.chain.evolves_to[0].evolves_to[0].species.name).charAt(0).toUpperCase() + EvolutionChain.chain.evolves_to[0].evolves_to[0].species.name.slice(1))
+
+                    if (EvolutionChain.chain.evolves_to[0].evolves_to[0]) {
+                    setPokemonSecondEvolutionTrigger((EvolutionChain.chain.evolves_to[0].evolves_to[0].evolution_details[0].trigger.name).charAt(0).toUpperCase() + EvolutionChain.chain.evolves_to[0].evolves_to[0].evolution_details[0].trigger.name.slice(1))
+                    }
+                    if (EvolutionChain.chain.evolves_to[0].evolves_to[0].evolution_details[0].item) {
+                        setPokemonSecondEvolutionStone((EvolutionChain.chain.evolves_to[0].evolves_to[0].evolution_details[0].item.name).charAt(0).toUpperCase() + EvolutionChain.chain.evolves_to[0].evolves_to[0].evolution_details[0].item.name.slice(1))
+                        }
                     
                     }
             }
@@ -99,13 +131,50 @@ export default function PokemonEvolution({EvolutionChainNumber}) {
             GetEvolution()
         }, [EvolutionChain], [])
 
-        function Arrow() {
-            return <Icon name="arrow-right-circle" size={30} color={COLORS.gray} />
+        function ArrowFirst() {
+
+            if (PokemonFirstEvolutionMinLevel != null) {
+            return <View style={styles.Arrow}>
+                <Icon name="arrow-right-circle" size={30} color={COLORS.gray} />
+                <Text style={styles.MinLvl}>{`Lvl ${PokemonFirstEvolutionMinLevel}`}</Text>
+            </View>
+            } else if ((PokemonFirstEvolutionMinLevel == null) && (PokemonFirstEvolutionStone) ) {
+                return <View style={styles.Arrow}>
+                <Icon name="arrow-right-circle" size={30} color={COLORS.gray} />
+                <Text style={styles.MinLvl}>{PokemonFirstEvolutionStone}</Text>
+            </View>
+            } else {
+                return <View style={styles.Arrow}>
+                <Icon name="arrow-right-circle" size={30} color={COLORS.gray} />
+                <Text style={styles.MinLvl}>{PokemonFirstEvolutionTrigger}</Text>
+            </View>
+            }
+
+        }
+
+        function ArrowSecond() {
+            if (PokemonSecondEvolutionMinLevel != null) {
+            return <View style={styles.Arrow}>
+            <Icon name="arrow-right-circle" size={30} color={COLORS.gray} />
+            <Text style={styles.MinLvl}>{`Lvl ${PokemonSecondEvolutionMinLevel}`}</Text>
+            </View>
+            } else  if ((PokemonSecondEvolutionMinLevel == null) && (PokemonSecondEvolutionStone) )  {
+                return <View style={styles.Arrow}>
+                <Icon name="arrow-right-circle" size={30} color={COLORS.gray} />
+                <Text style={styles.MinLvl}>{PokemonSecondEvolutionStone}</Text>
+                 </View>
+            } else  {
+                return <View style={styles.Arrow}>
+                <Icon name="arrow-right-circle" size={30} color={COLORS.gray} />
+                <Text style={styles.MinLvl}>{PokemonSecondEvolutionTrigger}</Text>
+                 </View>
+            }
         }
 
       
 
         function Evolution() {
+            const navigation = useNavigation()
 
             if ((PokemonFirstEvolutionImage === '') && (PokemonSecondEvolutionImage === '') && (PokemonThirdEvolutionImage === '')) {
                 return <LoadingPokeball />
@@ -125,18 +194,18 @@ export default function PokemonEvolution({EvolutionChainNumber}) {
                 return <>
                  <View style={styles.Evolution}>
 
-                 <View style={styles.ViewPokeImage}>
+                 <TouchableOpacity style={styles.ViewPokeImage}>
                  <Image style={styles.PokeBallBackground} source={PokeBallBackground} resizeMode={'contain'} />
                 <Image style={styles.PokemonImage} source={{uri: `https://assets.pokemon.com/assets/cms2/img/pokedex/full/${`00${PokemonFirstEvolutionImage}`.slice(-3)}.png`}} />
                 <Text style={styles.PokeName}>{PokemonFirstEvolutionName}</Text>
-                </View>
-                <Arrow />
+                </TouchableOpacity>
+                <ArrowFirst />
 
-             <View style={styles.ViewPokeImage}> 
+             <TouchableOpacity style={styles.ViewPokeImage}> 
              <Image style={styles.PokeBallBackground} source={PokeBallBackground} resizeMode={'contain'} />
             <Image style={styles.PokemonImage} source={{uri: `https://assets.pokemon.com/assets/cms2/img/pokedex/full/${`00${PokemonSecondEvolutionImage}`.slice(-3)}.png`}} />
             <Text style={styles.PokeName}>{PokemonSecondEvolutionName}</Text>
-            </View>  
+            </TouchableOpacity>  
 
             </View>
                 </>
@@ -146,37 +215,37 @@ export default function PokemonEvolution({EvolutionChainNumber}) {
                 return <>
                  <View style={styles.Evolution}>
 
-                    <View style={styles.ViewPokeImage}>
+                    <TouchableOpacity style={styles.ViewPokeImage}>
                         <Image style={styles.PokeBallBackground} source={PokeBallBackground} resizeMode={'contain'} />
                         <Image style={styles.PokemonImage} source={{uri: `https://assets.pokemon.com/assets/cms2/img/pokedex/full/${`00${PokemonFirstEvolutionImage}`.slice(-3)}.png`}} />
                         <Text style={styles.PokeName}>{PokemonFirstEvolutionName}</Text>
-            </View>
+            </TouchableOpacity>
 
-            <Arrow />
+            <ArrowFirst />
                 
-            <View style={styles.ViewPokeImage}>
+            <TouchableOpacity style={styles.ViewPokeImage}>
                 <Image style={styles.PokeBallBackground} source={PokeBallBackground} resizeMode={'contain'} />
                  <Image style={styles.PokemonImage} source={{uri: `https://assets.pokemon.com/assets/cms2/img/pokedex/full/${`00${PokemonSecondEvolutionImage}`.slice(-3)}.png`}} />
                  <Text style={styles.PokeName}>{PokemonSecondEvolutionName}</Text>
-            </View>
+            </TouchableOpacity>
             
             </View>
 
             <View style={styles.Evolution}>
 
-            <View style={styles.ViewPokeImage}>
+            <TouchableOpacity style={styles.ViewPokeImage}>
                  <Image style={styles.PokeBallBackground} source={PokeBallBackground} resizeMode={'contain'} />
                  <Image style={styles.PokemonImage} source={{uri: `https://assets.pokemon.com/assets/cms2/img/pokedex/full/${`00${PokemonSecondEvolutionImage}`.slice(-3)}.png`}} />
                  
                  <Text style={styles.PokeName}>{PokemonSecondEvolutionName}</Text>
-                </View>
-            <Arrow />
-            <View style={styles.ViewPokeImage}>
+                </TouchableOpacity>
+            <ArrowSecond />
+            <TouchableOpacity style={styles.ViewPokeImage}>
                     <Image style={styles.PokeBallBackground} source={PokeBallBackground} resizeMode={'contain'} />
                     <Image style={styles.PokemonImage} source={{uri: `https://assets.pokemon.com/assets/cms2/img/pokedex/full/${`00${PokemonThirdEvolutionImage}`.slice(-3)}.png`}} />
 
                     <Text style={styles.PokeName}>{PokemonThirdEvolutionName}</Text>
-                </View>
+                </TouchableOpacity>
             
             </View>
                 </>
@@ -243,12 +312,23 @@ const styles = StyleSheet.create({
     },
     PokeName: {
         fontFamily: 'Montserrat-Regular',
-        fontSize: 14,
+        fontSize: 13,
         color: COLORS.Black,
         alignSelf: 'center',
         position: 'absolute',
         bottom: -22,
-     
+        
+    },
+
+    Arrow: {
+        alignItems: 'center',
+
+    },
+    MinLvl: {
+        fontFamily: 'Montserrat-Bold',
+        fontSize: 13,
+        color: COLORS.gray,
+        alignSelf: 'center',
     },
    
 })

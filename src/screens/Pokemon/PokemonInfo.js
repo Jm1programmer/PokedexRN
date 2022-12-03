@@ -151,7 +151,9 @@ export default function PokemonInfo() {
         if (chosen === 'About' ) {
             return <PokemonAbout />
         } else if (chosen === 'Evolution') {
-            return <PokemonEvolution EvolutionChainNumber={GetEvolutionChainNumber}  />
+            return <ScrollView>
+             <PokemonEvolution EvolutionChainNumber={GetEvolutionChainNumber}  />
+            </ScrollView>
         }
     }
 
