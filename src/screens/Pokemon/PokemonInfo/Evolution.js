@@ -1,6 +1,6 @@
 import { useNavigation, useRoute } from "@react-navigation/native";
 import React, {useEffect,useState} from "react";
-import { Text, StyleSheet, View, ScrollView, Image, TouchableOpacity } from "react-native";
+import { Text, StyleSheet, View, ScrollView, Image, TouchableOpacity, Button } from "react-native";
 import { COLORS } from "../../../colors";
 
 import LoadingPokeball from "../../../components/loadingPokeball";
@@ -37,10 +37,18 @@ export default function PokemonEvolution({EvolutionChainNumber}) {
 
     const [PokemonSecondEvolutionTrigger, setPokemonSecondEvolutionTrigger] = useState('')
 
+    const [EvoChain, setEvochain] = useState([])
+
+    const [EvoLenght, setEvolenght] = useState()
+    const [EvoArray, setEvoArray] = useState([])
+  
+   
+ 
+
         const EvolutionNumber = EvolutionChainNumber
 
   
-      
+     
   
       async function GetPokemonEvolutionChain() {
         const baseUrl = 'https://pokeapi.co/api/v2';
@@ -68,6 +76,8 @@ export default function PokemonEvolution({EvolutionChainNumber}) {
         
      }
 
+     
+
      const GetEvolution = () => {
         if (EvolutionChain != undefined) {
             if (EvolutionChain.chain) {
@@ -77,9 +87,33 @@ export default function PokemonEvolution({EvolutionChainNumber}) {
                 setPokemonFirstEvolutionImage((EvolutionChain.chain.species.url).replace('https://pokeapi.co/api/v2/pokemon-species/','').replace('/', ''))
 
                 if (EvolutionChain.chain.evolves_to[0]) {
-                    
+                
+
                 //2 evolucão
 
+                setEvolenght(EvolutionChain.chain.evolves_to.length)
+                   
+                    if (EvolutionChain.chain.evolves_to.length > 1) {
+                        for (let i = 0;i < (EvolutionChain.chain.evolves_to.length); i++) {
+                           const Eveelotution = {
+                               pokemonName: (EvolutionChain.chain.evolves_to[i].species.name).charAt(0).toUpperCase() + EvolutionChain.chain.evolves_to[i].species.name.slice(1),
+
+                               Image:(EvolutionChain.chain.evolves_to[i].species.url).replace('https://pokeapi.co/api/v2/pokemon-species/','').replace('/', ''),
+
+                               minLevel: EvolutionChain.chain.evolves_to[i].evolution_details[0].min_level,
+
+                               ...EvolutionChain.chain.evolves_to[i].evolution_details[0].item && { stone: (EvolutionChain.chain.evolves_to[i].evolution_details[0].item.name).charAt(0).toUpperCase() + EvolutionChain.chain.evolves_to[i].evolution_details[0].item.name.slice(1) },
+
+                             ...EvolutionChain.chain.evolves_to[0]&&{trigger: ((EvolutionChain.chain.evolves_to[i].evolution_details[0].trigger.name).charAt(0).toUpperCase() + EvolutionChain.chain.evolves_to[i].evolution_details[0].trigger.name.slice(1)  ) }
+                             }
+                             
+                             setEvochain(prev => [...prev, Eveelotution])
+                         
+                        }
+                    }  else {
+                       
+                    
+                     
                     setPokemonSecondEvolutionName((EvolutionChain.chain.evolves_to[0].species.name).charAt(0).toUpperCase() + EvolutionChain.chain.evolves_to[0].species.name.slice(1))
 
                     setPokemonSecondEvolutionImage((EvolutionChain.chain.evolves_to[0].species.url).replace('https://pokeapi.co/api/v2/pokemon-species/','').replace('/', ''))
@@ -94,6 +128,8 @@ export default function PokemonEvolution({EvolutionChainNumber}) {
                     if (EvolutionChain.chain.evolves_to[0].evolves_to[0]) {
                     setPokemonFirstEvolutionTrigger((EvolutionChain.chain.evolves_to[0].evolves_to[0].evolution_details[0].trigger.name).charAt(0).toUpperCase() + EvolutionChain.chain.evolves_to[0].evolves_to[0].evolution_details[0].trigger.name.slice(1))
                     }
+
+                }
 
                     if (EvolutionChain.chain.evolves_to[0].evolves_to[0]) {
 
@@ -171,10 +207,70 @@ export default function PokemonEvolution({EvolutionChainNumber}) {
             }
         }
 
-      
+       
+       
+      function EveelotutionContent() {
+        return EvoChain.map((item) => {
+
+            function Arrow() {
+                
+
+                    if (item.minLevel != null) {
+                    return <View style={styles.Arrow}>
+                        <Icon name="arrow-right-circle" size={30} color={COLORS.gray} />
+                        <Text style={styles.MinLvl}>{`Lvl ${item.minLevel}`}</Text>
+                    </View>
+                    } else if ((item.minLevel == null) && (item.stone) ) {
+                        return <View style={styles.Arrow}>
+                        <Icon name="arrow-right-circle" size={30} color={COLORS.gray} />
+                        <Text style={styles.MinLvl}>{item.stone}</Text>
+                    </View>
+                    } else {
+                        return <View style={styles.Arrow}>
+                        <Icon name="arrow-right-circle" size={30} color={COLORS.gray} />
+                        <Text style={styles.MinLvl}>{item.trigger}</Text>
+                      
+                     
+                    </View>
+                    }
+        
+                
+            }
+          
+            return (
+                <View style={styles.Evolution}>
+
+                <TouchableOpacity style={styles.ViewPokeImage}>
+                <Image style={styles.PokeBallBackground} source={PokeBallBackground} resizeMode={'contain'} />
+               <Image style={styles.PokemonImage} source={{uri: `https://assets.pokemon.com/assets/cms2/img/pokedex/full/${`00${PokemonFirstEvolutionImage}`.slice(-3)}.png`}} />
+               <Text style={styles.PokeName}>{PokemonFirstEvolutionName}</Text>
+               </TouchableOpacity>
+               
+               <Arrow />
+
+            <TouchableOpacity style={styles.ViewPokeImage}> 
+            <Image style={styles.PokeBallBackground} source={PokeBallBackground} resizeMode={'contain'} />
+           <Image style={styles.PokemonImage} source={{uri: `https://assets.pokemon.com/assets/cms2/img/pokedex/full/${`00${item.Image}`.slice(-3)}.png`}} />
+           <Text style={styles.PokeName}>{item.pokemonName}</Text>
+           </TouchableOpacity>  
+
+           </View>
+              
+            );
+           
+        });
+      }
 
         function Evolution() {
+
+            
             const navigation = useNavigation()
+
+            if (EvoLenght > 1) {
+                return <>
+                <EveelotutionContent />
+                </>
+         }
 
             if ((PokemonFirstEvolutionImage === '') && (PokemonSecondEvolutionImage === '') && (PokemonThirdEvolutionImage === '')) {
                 return <LoadingPokeball />
